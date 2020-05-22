@@ -1,4 +1,4 @@
-(function() {
+(function($) {
   'use strict';
 
   /*
@@ -35,72 +35,72 @@
   E aqui nesse arquivo, faça a lógica para cadastrar os carros, em um módulo
   que será nomeado de "app".
   */
-  var app = (function appController() {
+    var app = (function appController() {
     return {
-    init: function init() {
-      this.companyInfo();
-      // this.initEvents();
-    },
+      init: function() {
+        this.companyInfo();
+        this.initEvents();
+      },
 
-    companyInfo: function companyInfo() {
-      var ajax = new XMLHttpRequest();
-      ajax.open('GET', '/company.json', true);
-      ajax.send();
-      ajax.addEventListener('readystatechange', this.getCompanyInfo, false);
-    },
+      companyInfo: function companyInfo() {
+        var ajax = new XMLHttpRequest();
+        ajax.open('GET', '/company.json');
+        ajax.send();
+        ajax.addEventListener('readystatechange', this.getCompanyInfo, true);
+      },
 
-    getCompanyInfo: function getCompanyInfo() {
-      if(app.isReady.call(this)) {
-        var data = JSON.parse(this.responseText);
-        var $companyName = $('[data-js="company-name"]').get();
-        var $companyPhone = $('[data-js="company-phone"]').get();
-        $companyName.textContent = data.name;
-        $companyPhone.textContent = data.phone;
-      }
-    },
+      getCompanyInfo: function getCompanyInfo() {
+        if(app.isReady.call(this)) {
+          var data = JSON.parse(this.responseText);
+          var $companyName = $('[data-js="company-name"]').get();
+          var $companyPhone = $('[data-js="company-phone"]').get();
+          $companyName.textContent = data.name;
+          $companyPhone.textContent = data.phone;
+        }
+      },
 
-    isReady: function isReady() {
-      return this.readyState === 4 && this.status === 200;
-    },
+      isReady: function isReady() {
+        return this.readyState === 4 && this.status === 200;
+      },
 
-    initEvents: function initEvents() {
-      $('[data-js="main-form"]').on('submit', this.handleSubmit);
-    },
+      initEvents: function initEvents() {
+        $('[data-js="main-form"]').on('submit', this.handleSubmit);
+      },
 
-    handleSubmit: function handleSubmit(e) {
-      e.preventDefault();
-      var $tableCar = $('[data-js="table-car"]').get();
-      $tableCar.appendChild(app.createNewCar());
-    },
+      handleSubmit: function handleSubmit(e) {
+        e.preventDefault();
+        var $tableCar = $('[data-js="table-car"]').get();
+        $tableCar.appendChild(app.createNewCar());
+      },
 
-    createNewCar: function createNewCar() {
-      var $fragment = document.createDocumentFragment();
-      var $tr = document.createElement('tr');
-      var $tdImagem = document.createElement('td');
-      var $imagem = document.createElement('img');
-      var $tdMarcaModelo = document.createElement('td');
-      var $tdAno = document.createElement('td');
-      var $tdCor = document.createElement('td');
-      var $tdPreco =  document.createElement('td');
+      createNewCar: function createNewCar() {
+        var $fragment = document.createDocumentFragment();
+        var $tr = document.createElement('tr');
+        var $tdImagem = document.createElement('td');
+        var $imagem = document.createElement('img');
+        var $tdMarcaModelo = document.createElement('td');
+        var $tdAno = document.createElement('td');
+        var $tdCor = document.createElement('td');
+        var $tdPreco =  document.createElement('td');
 
-      $imagem.setAttribute('src', $('[data-js="imagem"]').get().value);
-      $tdImagem.appendChild($imagem);
+        $imagem.setAttribute('src', $('[data-js="imagem"]').get().value);
+        $tdImagem.appendChild($imagem);
 
-      $tdMarcaModelo.textContent = $('[data-js="marca-modelo"]').get().value;
-      $tdAno.textContent = $('[data-js="ano"]').get().value;
-      $tdCor.textContent = $('[data-js="cor"]').get().value;
-      $tdPreco.textContent = $('[data-js="preco"]').get().value;
+        $tdMarcaModelo.textContent = $('[data-js="marca-modelo"]').get().value;
+        $tdAno.textContent = $('[data-js="ano"]').get().value;
+        $tdCor.textContent = $('[data-js="cor"]').get().value;
+        $tdPreco.textContent = $('[data-js="preco"]').get().value;
 
-      $tr.appendChild($tdImagem);
-      $tr.appendChild($tdMarcaModelo);
-      $tr.appendChild($tdAno);
-      $tr.appendChild($tdCor);
-      $tr.appendChild($tdPreco);
+        $tr.appendChild($tdImagem);
+        $tr.appendChild($tdMarcaModelo);
+        $tr.appendChild($tdAno);
+        $tr.appendChild($tdCor);
+        $tr.appendChild($tdPreco);
 
-      return $fragment.appendChild($tr);
-    },
-  }
-})();
+        return $fragment.appendChild($tr);
+      },
+    }
+  })();
 
-app.init();
-})(window.DOM); 
+  app.init();
+})(window.DOM);
