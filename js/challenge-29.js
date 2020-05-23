@@ -82,6 +82,8 @@
         var $tdAno = document.createElement('td');
         var $tdCor = document.createElement('td');
         var $tdPreco =  document.createElement('td');
+        var $tdRemove =  document.createElement('td');
+        var $btnRemove =  document.createElement('button');
 
         $imagem.setAttribute('src', $('[data-js="imagem"]').get().value);
         $tdImagem.appendChild($imagem);
@@ -90,15 +92,25 @@
         $tdAno.textContent = $('[data-js="ano"]').get().value;
         $tdCor.textContent = $('[data-js="cor"]').get().value;
         $tdPreco.textContent = $('[data-js="preco"]').get().value;
+        $btnRemove.textContent = 'x';
 
         $tr.appendChild($tdImagem);
         $tr.appendChild($tdMarcaModelo);
         $tr.appendChild($tdAno);
         $tr.appendChild($tdCor);
         $tr.appendChild($tdPreco);
+        $tdRemove.appendChild($btnRemove);
+        $tr.appendChild($tdRemove);
+
+        $tdRemove.addEventListener('click', this.removeCar, false);
 
         return $fragment.appendChild($tr);
       },
+
+      removeCar: function removeCar() {
+        this.parentNode.remove();
+      },
+
     }
   })();
 
