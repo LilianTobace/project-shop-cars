@@ -39,7 +39,8 @@
     return {
       init: function() {
         this.companyInfo();
-        this.initEvents();
+        this.addCar();
+        this.getData();
       },
 
       companyInfo: function companyInfo() {
@@ -63,55 +64,112 @@
         return this.readyState === 4 && this.status === 200;
       },
 
-      initEvents: function initEvents() {
-        $('[data-js="main-form"]').on('submit', this.handleSubmit);
+      addCar: function addCar() {
+        $('[data-js="main-form"]').on('submit', this.submitEvent);
       },
 
-      handleSubmit: function handleSubmit(e) {
-        e.preventDefault();
-        var $tableCar = $('[data-js="table-car"]').get();
-        $tableCar.appendChild(app.createNewCar());
-      },
-
-      createNewCar: function createNewCar() {
-        var $fragment = document.createDocumentFragment();
-        var $tr = document.createElement('tr');
-        var $tdImagem = document.createElement('td');
-        var $imagem = document.createElement('img');
-        var $tdMarcaModelo = document.createElement('td');
-        var $tdAno = document.createElement('td');
-        var $tdCor = document.createElement('td');
-        var $tdPreco =  document.createElement('td');
-        var $tdRemove =  document.createElement('td');
-        var $btnRemove =  document.createElement('button');
-
-        $imagem.setAttribute('src', $('[data-js="imagem"]').get().value);
-        $tdImagem.appendChild($imagem);
-
-        $tdMarcaModelo.textContent = $('[data-js="marca-modelo"]').get().value;
-        $tdAno.textContent = $('[data-js="ano"]').get().value;
-        $tdCor.textContent = $('[data-js="cor"]').get().value;
-        $tdPreco.textContent = $('[data-js="preco"]').get().value;
-        $btnRemove.textContent = 'x';
-
-        $tr.appendChild($tdImagem);
-        $tr.appendChild($tdMarcaModelo);
-        $tr.appendChild($tdAno);
-        $tr.appendChild($tdCor);
-        $tr.appendChild($tdPreco);
-        $tdRemove.appendChild($btnRemove);
-        $tr.appendChild($tdRemove);
-
-        $tdRemove.addEventListener('click', this.removeCar, false);
-
-        return $fragment.appendChild($tr);
+      submitEvent: function submitEvent(event) {
+        event.preventDefault();
+        appController().registerCar();
       },
 
       removeCar: function removeCar() {
         this.parentNode.remove();
       },
 
+      carInfo: function carInfo() {
+        var carInfo = {
+          image: $('[data-js="imagem"]').get().value,
+          brandModel: $('[data-js="marca-modelo"]').get().value,
+          year: $('[data-js="ano"]').get().value,
+          price: $('[data-js="preco"]').get().value,
+          color: $('[data-js="cor"]').get().value
+        };
+        return carInfo;
+      },
+
+      registerCar: function registerCar() {
+        var carInfo = appController().carInfo();
+        var ajax = new XMLHttpRequest();
+        ajax.open('POST', 'http://localhost:3000/car');
+        ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        ajax.send(
+          'image='+carInfo.image+'&brandModel='+carInfo.brandModel+'&year='+carInfo.year+'&plate='+carInfo.price+'&color='+carInfo.color          
+        );
+
+        ajax.onreadystatechange = function() {
+          if(ajax.readyState === 4 && ajax.status === 200){
+            console.log("Carro cadastrado!");
+            appController().cleanInputs();
+            appController().getData();
+          }
+        };
+        
+      },
+
+      cleanInputs: function cleanInputs(){
+        $('[data-js="imagem"]').get().value = '';
+        $('[data-js="marca-modelo"]').get().value = '';
+        $('[data-js="ano"]').get().value = '';
+        $('[data-js="cor"]').get().value = '';
+        $('[data-js="preco"]').get().value = '';
+      },
+
+      getData: function getData() {
+        var ajax = new XMLHttpRequest();
+        ajax.open('GET', 'http://localhost:3000/car');
+        ajax.send();
+
+        ajax.onreadystatechange = function() {
+          if(ajax.readyState === 4 && ajax.status === 200){
+            console.log("Carro adicionado na tabela!");
+            appController().createNewCar(ajax);
+          }
+        };
+      },
+
+      createNewCar: function createNewCar(ajax) {
+        var dataResquest = JSON.parse(ajax.responseText);
+        var $table = $('[data-js="table"]').get();
+
+        dataResquest.forEach(function(item){
+          var $fragment = document.createDocumentFragment();
+          var $tr = document.createElement('tr');
+          var $tdImagem = document.createElement('td');
+          var $imagem = document.createElement('img');
+          var $tdMarcaModelo = document.createElement('td');
+          var $tdAno = document.createElement('td');
+          var $tdCor = document.createElement('td');
+          var $tdPreco =  document.createElement('td');
+          var $tdRemove =  document.createElement('td');
+          var $btnRemove =  document.createElement('button');
+
+          $imagem.setAttribute('src', item.image);
+          $tdImagem.appendChild($imagem);
+
+          $tdMarcaModelo.textContent = item.brandModel;
+          $tdAno.textContent = item.year;
+          $tdCor.textContent = item.color;
+          $tdPreco.textContent = item.plate;
+          $btnRemove.textContent = 'x';
+
+          $tr.appendChild($tdImagem);
+          $tr.appendChild($tdMarcaModelo);
+          $tr.appendChild($tdAno);
+          $tr.appendChild($tdCor);
+          $tr.appendChild($tdPreco);
+          $tdRemove.appendChild($btnRemove);
+          $tr.appendChild($tdRemove);
+          
+          $fragment.appendChild($tr);
+          $table.appendChild($fragment);
+
+          $tdRemove.addEventListener('click', appController().removeCar, false);
+        
+        });
+      }
     }
+
   })();
 
   app.init();
