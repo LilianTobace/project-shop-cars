@@ -74,7 +74,24 @@
       },
 
       removeCar: function removeCar() {
-        this.parentNode.remove();
+        appController().removeApi();
+        
+      },
+
+      removeCar: function removeCar() {
+        var carTh =  this.parentNode
+        var carInfo = appController().carInfo();
+        var ajax = new XMLHttpRequest();
+        ajax.open('DELETE', 'http://localhost:3000/car');
+        ajax.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        ajax.send('plate=' + carInfo.plate);
+        
+        ajax.onreadystatechange = function() {
+          if(ajax.readyState === 4){
+            carTh.remove();
+            console.log('Carro removido!');
+          }
+        };
       },
 
       carInfo: function carInfo() {
